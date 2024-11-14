@@ -1,0 +1,64 @@
+name: release
+
+on:
+  schedule:
+    - cron: 1 0 * * 0
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  release-slim:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image:
+          - NODE_VERSION: 20
+            DEB_VERSION: bullseye
+          - NODE_VERSION: 22
+            DEB_VERSION:  bullseye
+          - NODE_VERSION: 20
+            DEB_VERSION: bookworm
+          - NODE_VERSION: 22
+            DEB_VERSION: bookworm
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Get Meta
+        id: meta
+        run: |
+          echo IMAGE_CREATED=$(date -u +'%Y-%m-%dT%H:%M:%SZ') | tee -a $GITHUB_OUTPUT
+          echo IMAGE_VERSION=$(date -u +'v%y.%m.%d')          | tee -a $GITHUB_OUTPUT
+          echo IMAGE_REVISION=$(git rev-parse HEAD)           | tee -a $GITHUB_OUTPUT
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.CR_USERNAME }}
+          password: ${{ secrets.CR_PASSWORD }}
+      -
+        name: Set up BuildX
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+      -
+        name: Build and push ${{ matrix.image.NODE_VERSION }}-${{ matrix.image.DEB_VERSION }}-slim
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          platforms: ${{ steps.buildx.outputs.platforms }}
+          pull: true
+          push: true
+          no-cache: true
+          build-args: |
+            BASE_IMAGE_TAG=${{ matrix.image.NODE_VERSION }}-${{ matrix.image.DEB_VERSION }}-slim
+            IMAGE_CREATED=${{ steps.meta.outputs.IMAGE_CREATED }}
+            IMAGE_VERSION=${{ steps.meta.outputs.IMAGE_VERSION }}
+            IMAGE_REVISION=${{ steps.meta.outputs.IMAGE_REVISION }}
+          tags: |
+            bvandevliet/runner-images:${{ matrix.image.NODE_VERSION }}-${{ matrix.image.DEB_VERSION }}-slim
