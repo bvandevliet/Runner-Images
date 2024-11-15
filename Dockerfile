@@ -21,5 +21,5 @@ LABEL org.opencontainers.image.created="${IMAGE_CREATED}" \
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt update && apt install -y --no-install-recommends \
-    ca-certificates git git-lfs \
+    ca-certificates curl wget git git-lfs \
     && apt clean && rm -rf /var/lib/apt/lists/*
