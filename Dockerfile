@@ -21,5 +21,6 @@ LABEL org.opencontainers.image.created="${IMAGE_CREATED}" \
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt update && apt install -y --no-install-recommends \
-    ca-certificates curl wget ca-certificates git git-lfs \
+    ca-certificates curl wget jq git git-lfs \
+    libicu-dev unzip gnupg2 sudo \
     && apt clean && rm -rf /var/lib/apt/lists/*
