@@ -12,12 +12,9 @@ jobs:
   release-slim:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         image:
-          - NODE_VERSION: 22
-            DEB_VERSION: bullseye
-          - NODE_VERSION: 24
-            DEB_VERSION: bullseye
           - NODE_VERSION: 22
             DEB_VERSION: bookworm
           - NODE_VERSION: 24
