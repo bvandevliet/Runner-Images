@@ -19,9 +19,13 @@ jobs:
             DEB_VERSION: bookworm
           - NODE_VERSION: 24
             DEB_VERSION: bookworm
+          - NODE_VERSION: 26
+            DEB_VERSION: bookworm
           - NODE_VERSION: 22
             DEB_VERSION: trixie
           - NODE_VERSION: 24
+            DEB_VERSION: trixie
+          - NODE_VERSION: 26
             DEB_VERSION: trixie
     steps:
       - name: Checkout
